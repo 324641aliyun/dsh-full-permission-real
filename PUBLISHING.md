@@ -3,89 +3,84 @@
 DSH has **no central marketplace and ships no index source**. "Publishing" means
 two independent things:
 
-1. **Making the bundle installable** — publish the package to npm
-   (`dsh-full-permission-real@1.0.0`) **or** push the Git repository and pin a
-   commit. `npm` is the recommended target; it is what `market/index.json`
-   already describes.
+1. **Making the bundle installable** — a public npm package **or** a public Git
+   repository pinned to a commit. This project publishes **from the public Git
+   repository**, because the npm account's 2FA is a passkey that CLI publishing
+   cannot satisfy without a bypass-2FA token; the market's Git install target is
+   a first-class format-1 source and installs the same package.
 2. **Hosting a format-1 index JSON** on any static `http(s)` host that answers
    `200` without redirects (strict UTF-8, ≤128 MiB). Users add that URL under
-   **Plugins → Discover → Add index source**, then install the plugin. The
-   recommended host is the repository's own `raw.githubusercontent.com` URL for
-   `market/index.json`.
+   **Plugins → Discover → Add index source**, then install the plugin.
 
 The index is unsigned: the install confirmation shows the index URL and the
 exact source spec, so the URL you publish is your identity.
 
-## What is already in this repository
+## Live artifacts
 
-| File | Purpose |
+| Thing | Value |
 |---|---|
-| `market/index.json` | Format-1 index, npm install target `dsh-full-permission-real@1.0.0`. |
-| `market/index.git-sample.json` | Same plugin as a commit-pinned Git target (replace the placeholder commit after the first push). |
-| `market/icons/dsh-full-permission-real.svg` | Index icon referenced relatively by the index. |
-| `market/serve.mjs` | Local static server used for loopback Discover verification. |
-| `market/validate.mjs` | Runs the real DSH validator + a Discover simulation against this folder. |
-| `tools/publish.ps1` | Guided publish script (npm first, then Git). |
+| Repository (public) | `https://github.com/324641aliyun/dsh-full-permission-real` |
+| Live market index | `https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market/index.json` |
+| Install source | commit-pinned `git+https://github.com/324641aliyun/dsh-full-permission-real.git#<commit>` |
+| npm variant | `market/index.npm-sample.json` (activates once npm publishing is possible) |
+| Validate | `node market/validate.mjs` |
+| Local preview | `node market/serve.mjs 8791` → `http://127.0.0.1:8791/index.json` |
 
-## Prerequisites (the user must authorize these)
+## Publish a new version (Git path — currently used)
 
-- An npm account with publish rights, logged in on this machine:
-  `cmd /c npm login` (interactive; 2FA is prompted by npm itself).
-- A **public** GitHub repository named `dsh-full-permission-real` under the
-  account that will own the index (the generated artifacts assume
-  `324641aliyun`). Do not initialize it with files.
-- Git credentials that can push to that repository.
+1. Bump `version` in `package.json`, add a `CHANGELOG.md` entry, and extend the
+   plugin's `versions` array in `market/index.json` (newest first, Unix-seconds
+   `publishTimestamp`).
+2. `node market/validate.mjs` and the test suite must pass.
+3. Commit and push to `main`. The index must point at a commit whose tree
+   contains this package:
+   ```powershell
+   git add -A
+   git commit -m "Release dsh-full-permission-real <version>"
+   git push origin main
+   $commit = git rev-parse HEAD
+   # put $commit into market/index.json's versions[0].source.commit,
+   # then commit and push again; the index may reference the previous commit.
+   ```
+4. Verify the hosted index and the exact install spec:
+   ```powershell
+   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market/index.json" -MaximumRedirection 0 -UseBasicParsing
+   ```
+5. Install it the way Discover does:
+   `plugin_manager` `install_bundle(target: "git+https://github.com/324641aliyun/dsh-full-permission-real.git#<commit>")`.
 
-## Publish
+## npm publishing (optional, requires bypass-2FA token)
+
+The npm account currently uses `auth-and-writes` 2FA with a passkey, and npm CLI
+publishing needs either an OTP or a granular token with **Bypass 2FA** enabled.
+When such a token exists:
 
 ```powershell
 cd "C:\Users\324641\Documents\Temporary workspace\dsh-full-permission-real"
-
-# 1. re-validate everything against the local DSH installation
-node market/validate.mjs
-
-# 2. npm + git publish (this script checks its prerequisites and stops early)
-powershell -ExecutionPolicy Bypass -File tools\publish.ps1 -Owner 324641aliyun
+$env:NODE_AUTH_TOKEN = '<granular token with Bypass 2FA>'
+cmd /c "npm publish --access public"
 ```
 
-The script performs, in order:
-
-1. `cmd /c npm whoami` (fails with ENEEDAUTH before touching anything).
-2. `cmd /c npm publish --access public` from the repository root.
-3. `git init` (idempotent), identity check, `git add -A`, commit.
-4. `git remote add origin https://github.com/<owner>/dsh-full-permission-real.git`
-   (or reuse `.git/config`'s existing `origin`), `git push -u origin main`.
-5. Prints the npm package URL, the index URL, and the pushed commit SHA.
-
-After that, replace the npm entry's placeholder expectations:
-
-- The published index URL becomes
-  `https://raw.githubusercontent.com/<owner>/dsh-full-permission-real/main/market/index.json`.
-- If you prefer the Git install target, put the printed commit SHA into
-  `market/index.git-sample.json`, commit, and push.
-- Run `node market/validate.mjs` again after changing the owner or the commit;
-  it validates the index against the real DSH validator and simulates Discover.
+Then switch `market/index.json` to the npm source shown in
+`market/index.npm-sample.json` (or keep both: a version may list any source
+form). `tools/publish.ps1` automates the npm-publish + git-push sequence once
+the token works; it validates before touching anything.
 
 ## Point users' DSH at the index
 
-**Plugins → Discover → Add index source** and paste the index URL, or add it to
-the profile patch (`~/.dsh/profiles/<profile>/cordis.patch.yml`):
+**Plugins → Discover → Add index source** and paste the live index URL, or add it
+to the profile patch (`~/.dsh/profiles/<profile>/cordis.patch.yml`):
 
 ```yaml
 - id: plugin-market
   config:
     indexes:
-      - https://raw.githubusercontent.com/<owner>/dsh-full-permission-real/main/market/index.json
+      - https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market/index.json
 ```
 
-Then **Discover → Full permission (real) → Install**. The install runs
-`pnpm add dsh-full-permission-real@1.0.0` in the profile and activates the
-bundle patch; no manual profile edit is required.
-
-**Alternative without an npm account:** use the Git index
-(`market/index.git-sample.json`) and let DSH install
-`git+https://github.com/<owner>/dsh-full-permission-real.git#<commit>`. The
-repository still has to be public.
+Then **Discover → Full permission (real) → Install**. Installation runs
+`pnpm add git+https://...#<commit>` in the profile and activates the bundle
+patch; no manual profile edit is required.
 
 ## Local verification (no account needed)
 
@@ -94,19 +89,12 @@ node market/serve.mjs 8791
 # Plugins -> Discover -> Add index source: http://127.0.0.1:8791/index.json
 ```
 
-Discover can load and display the entry; **installing from the local index only
-works after npm publish** (its install target is the npm package). To install the
-unpublished build for testing use the local path install instead:
-
-```powershell
-# through the agent: plugin_manager install_bundle(target: <absolute path>)
-dsh plugin --profile web add "C:\Users\324641\Documents\Temporary workspace\dsh-full-permission-real"
-```
+The local index is display-identical to the published one; the Git install target
+already works because the repository is public.
 
 ## Version bumps
 
-1. Bump `version` in `package.json` and add a `CHANGELOG.md` entry.
-2. Add a new object to the plugin's `versions` array in `market/index.json`
-   (newest first, with its `publishTimestamp` in Unix seconds) and set
-   `engines.dsh` to the package manifest's value.
-3. `node market/validate.mjs`, then re-run `tools/publish.ps1`.
+1. Bump `version`, changelog, and `market/index.json` versions array.
+2. `node market/validate.mjs && npm test` (or the individual `test:*` scripts).
+3. Commit, push, then pin the new commit in `market/index.json`, commit, push.
+4. Install the new commit to verify, then report the version.

@@ -5,8 +5,8 @@
     "zh": "完全权限（真实）插件索引"
   },
   "description": {
-    "en": "Index source for dsh-full-permission-real: a Windows-only DSH bundle that adds a real elevated-administrator permission mode.",
-    "zh": "dsh-full-permission-real 的索引源：仅限 Windows 的 DSH 组合包，新增真实管理员提权的权限模式。"
+    "en": "Index source for dsh-full-permission-real: a Windows-only DSH bundle that adds a real elevated-administrator permission mode. Installs from a commit-pinned public Git repository.",
+    "zh": "dsh-full-permission-real 的索引源：仅限 Windows 的 DSH 组合包，新增真实管理员提权的权限模式。从固定 commit 的公网 Git 仓库安装。"
   },
   "metadata": {
     "categories": {
@@ -81,7 +81,9 @@
           "version": "1.0.0",
           "publishTimestamp": 1794572523,
           "source": {
-            "type": "npm"
+            "type": "git",
+            "url": "https://github.com/324641aliyun/dsh-full-permission-real.git",
+            "commit": "0000000000000000000000000000000000000000"
           },
           "engines": {
             "dsh": "0.2.2-rc.1"

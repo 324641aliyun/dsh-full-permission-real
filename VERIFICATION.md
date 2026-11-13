@@ -137,11 +137,26 @@ contribution, and `full_real_status` disappeared; re-enabling restored both.
 shipped sandbox executor row is never replaced), so the fallback is the stock
 DSH behavior rather than a broken shell.
 
-## 10. Open item — public plugin-market publish
+## 10. Plugin-market publishing
 
-Local index + Discover wiring are verified (`http://127.0.0.1:8791/index.json`,
-`market/validate.mjs` 15/15). The public publish (npm package + GitHub-hosted
-`market/index.json`) is blocked only on the user's accounts: `npm whoami` is
-`ENEEDAUTH`, no GitHub repository exists yet, and repo metadata assumes
-`324641aliyun/dsh-full-permission-real`. `tools/publish.ps1` performs the publish
-once those are authorized; nothing was published during verification.
+The plugin is published through a public Git source plus a format-1 index, the
+two things "published to the plugin market" means for DSH:
+
+- repository: `https://github.com/324641aliyun/dsh-full-permission-real`
+  (public, topics include `dsh-plugin`);
+- live index: `https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market/index.json`
+  (fetched with no redirects, strict UTF-8 — checked `200`);
+- install target: a commit-pinned
+  `git+https://github.com/324641aliyun/dsh-full-permission-real.git#<commit>`,
+  which `plugin_manager`/Discover install into a profile directly.
+
+`market/validate.mjs` (15 checks including the Discover simulation) passes for
+the live index and for the npm variant kept in `market/index.npm-sample.json`.
+The commit pin is verified by installing that exact spec into the Web profile
+(see the final install/reinstall step in the delivery report).
+
+npm publishing is prepared but blocked by account-side 2FA: the npm account is
+`auth-and-writes` with a passkey, and npm CLI requires an OTP or a granular
+token with **Bypass 2FA**. `market/index.npm-sample.json` and
+`tools/publish.ps1` are ready for that path; the Git path above does not depend
+on it.

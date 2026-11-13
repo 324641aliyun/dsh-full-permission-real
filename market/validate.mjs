@@ -4,14 +4,16 @@
  * machine. Read-only: writes nothing and never touches the profile.
  *
  * Checks:
- *  1. `index.json` and `index.git-sample.json` against the real
+ *  1. `index.json` (the live index, installed from a commit-pinned public Git
+ *     repository) and `index.npm-sample.json` (the npm variant, used once the
+ *     account has a bypass-2FA token) against the real
  *     `@deepseek-ai/dsh-plugin-market-index` validator (`parseMarketIndex`).
  *  2. The exact install specs `marketInstallTarget` hands to `install_bundle`.
  *  3. The package manifest: bundle patch, win32 platform gate, and `engines.dsh`
  *     via `evaluatePluginCompatibility` from `@deepseek-ai/dsh-app-boot`.
  *  4. The patch, locales, and icon files.
  *  5. A Discover simulation: a throwaway static server serves this directory;
- *     the index is fetched with no redirects and strict UTF-8, parsed, and its
+ *     each index is fetched with no redirects and strict UTF-8, parsed, and its
  *     relative icon fetched, exactly like `pluginMarket` does.
  *  6. Negative cases proving the validator really rejects malformed indexes.
  *
@@ -61,7 +63,7 @@ const readJson = async (path) => JSON.parse(await readFile(path, 'utf8'))
 
 const RAW_BASE = 'https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market'
 const indexUrl = `${RAW_BASE}/index.json`
-const gitSampleUrl = `${RAW_BASE}/index.git-sample.json`
+const npmSampleUrl = `${RAW_BASE}/index.npm-sample.json`
 
 const runtimeVersion = getDshRuntimeVersion()
 console.log('='.repeat(78))
@@ -69,10 +71,10 @@ console.log(`dsh runtime version: ${runtimeVersion}`)
 console.log('='.repeat(78))
 
 const index = await readJson(join(HERE, 'index.json'))
-const gitSample = await readJson(join(HERE, 'index.git-sample.json'))
+const npmSample = await readJson(join(HERE, 'index.npm-sample.json'))
 const pkg = await readJson(join(ROOT, 'package.json'))
 let parsedIndex
-let parsedGitSample
+let parsedNpmSample
 
 check('index.json is a valid format-1 index', () => {
   parsedIndex = parseMarketIndex(index, indexUrl)
@@ -82,24 +84,28 @@ check('index.json is a valid format-1 index', () => {
   return `${parsedIndex.plugins.length} plugin, ${plugin.name}@${plugin.versions[0].version}`
 })
 
-check('index.git-sample.json is a valid format-1 index', () => {
-  parsedGitSample = parseMarketIndex(gitSample, gitSampleUrl)
-  return `${parsedGitSample.plugins.length} plugin(s), source ${parsedGitSample.plugins[0].versions[0].source.type}`
+check('index.npm-sample.json is a valid format-1 index', () => {
+  parsedNpmSample = parseMarketIndex(npmSample, npmSampleUrl)
+  return `${parsedNpmSample.plugins.length} plugin(s), source ${parsedNpmSample.plugins[0].versions[0].source.type}`
 })
 
-check('index.json install target is an exact npm pin', () => {
+check('index.json install target is a commit-pinned public Git repository', () => {
   const plugin = parsedIndex.plugins[0]
   const target = marketInstallTarget(plugin.name, plugin.versions[0])
-  assert(target.spec === 'dsh-full-permission-real@1.0.0', `spec ${target.spec}`)
-  assert(target.registry === undefined, 'a portable index names no registry')
+  assert(
+    target.spec.startsWith('git+https://github.com/324641aliyun/dsh-full-permission-real.git#'),
+    `spec ${target.spec}`,
+  )
+  assert(/[0-9a-f]{40}$/u.test(target.spec), 'commit is not 40-hex')
+  assert(target.registry === undefined, 'git targets carry no registry')
   return target.spec
 })
 
-check('index.git-sample.json install target is commit-pinned', () => {
-  const plugin = parsedGitSample.plugins[0]
+check('index.npm-sample.json install target is an exact npm pin', () => {
+  const plugin = parsedNpmSample.plugins[0]
   const target = marketInstallTarget(plugin.name, plugin.versions[0])
-  assert(target.spec.startsWith('git+https://github.com/324641aliyun/dsh-full-permission-real.git#'), `spec ${target.spec}`)
-  assert(/[0-9a-f]{40}$/u.test(target.spec), 'commit is not 40-hex')
+  assert(target.spec === 'dsh-full-permission-real@1.0.0', `spec ${target.spec}`)
+  assert(target.registry === undefined, 'a portable index names no registry')
   return target.spec
 })
 
@@ -121,8 +127,10 @@ check('package engines.dsh admits the running DSH', () => {
   return `engines.dsh=${pkg.engines.dsh} accepts dsh ${runtimeVersion}`
 })
 
-check('index engines.dsh matches the package manifest', () => {
-  assert(parsedIndex.plugins[0].versions[0].engines.dsh === pkg.engines.dsh, 'engines mismatch')
+check('both indexes copy the package engines.dsh unchanged', () => {
+  for (const parsed of [parsedIndex, parsedNpmSample]) {
+    assert(parsed.plugins[0].versions[0].engines.dsh === pkg.engines.dsh, 'engines mismatch')
+  }
   return pkg.engines.dsh
 })
 
@@ -219,10 +227,16 @@ const localIndexUrl = `http://127.0.0.1:${String(port)}/index.json`
 console.log('-'.repeat(78))
 console.log(`Discover simulation: ${HERE} on http://127.0.0.1:${String(port)}`)
 try {
-  await checkAsync('Discover can load the index over loopback HTTP (no redirect, strict UTF-8)', async () => {
+  await checkAsync('Discover can load the live git index over loopback HTTP (no redirect, strict UTF-8)', async () => {
     const loaded = await fetchIndex(localIndexUrl)
     const plugin = loaded.plugins[0]
-    return `HTTP 200, parseMarketIndex OK: ${plugin.name}@${plugin.versions[0].version}`
+    const target = marketInstallTarget(plugin.name, plugin.versions[0])
+    return `HTTP 200, parseMarketIndex OK: ${plugin.name}@${plugin.versions[0].version} -> ${target.spec}`
+  })
+  await checkAsync('Discover can load the npm sample index over loopback HTTP', async () => {
+    const loaded = await fetchIndex(`http://127.0.0.1:${String(port)}/index.npm-sample.json`)
+    const target = marketInstallTarget(loaded.plugins[0].name, loaded.plugins[0].versions[0])
+    return `HTTP 200, parseMarketIndex OK: ${loaded.plugins[0].name} -> ${target.spec}`
   })
   await checkAsync('the relative icon is served beside the index', async () => {
     const loaded = await fetchIndex(localIndexUrl)

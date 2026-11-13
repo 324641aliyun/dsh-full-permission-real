@@ -1,12 +1,12 @@
 {
   "format": 1,
   "title": {
-    "en": "Full permission (real) plugin index — git sample",
-    "zh": "完全权限（真实）插件索引 — Git 示例"
+    "en": "Full permission (real) plugin index",
+    "zh": "完全权限（真实）插件索引"
   },
   "description": {
-    "en": "SAMPLE ONLY: the same plugin installed from a commit-pinned public Git repository instead of npm. Replace the placeholder commit with `git rev-parse HEAD` after the repository exists.",
-    "zh": "仅示例：同一插件改为从固定提交的公网 Git 仓库安装。仓库创建后请把占位提交替换为 `git rev-parse HEAD` 的真实值。"
+    "en": "Index source for dsh-full-permission-real: a Windows-only DSH bundle that adds a real elevated-administrator permission mode.",
+    "zh": "dsh-full-permission-real 的索引源：仅限 Windows 的 DSH 组合包，新增真实管理员提权的权限模式。"
   },
   "metadata": {
     "categories": {
@@ -28,6 +28,12 @@
         "title": {
           "en": "Administrator",
           "zh": "管理员权限"
+        }
+      },
+      "experimental": {
+        "title": {
+          "en": "Experimental",
+          "zh": "实验性"
         }
       }
     }
@@ -53,15 +59,18 @@
         "category": "permission-mode",
         "labels": [
           "windows-only",
-          "administrator"
+          "administrator",
+          "experimental"
         ],
         "keywords": [
           "dsh",
           "dsh-plugin",
           "deepseek-harness",
           "permission",
+          "permission-mode",
           "powershell",
           "administrator",
+          "elevation",
           "uac",
           "windows"
         ],
@@ -72,9 +81,7 @@
           "version": "1.0.0",
           "publishTimestamp": 1794572523,
           "source": {
-            "type": "git",
-            "url": "https://github.com/324641aliyun/dsh-full-permission-real.git",
-            "commit": "de68352b4353075b52de1db8f49cdc6669542223"
+            "type": "npm"
           },
           "engines": {
             "dsh": "0.2.2-rc.1"

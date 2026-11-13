@@ -67,9 +67,20 @@ a DSH started as administrator, otherwise commands fail with a clear
 
 ### From the plugin market (Discover)
 
-Add the index source under **Plugins → Discover → Add index source**, then
-install **Full permission (real)**. See `market/index.json` and the repository
-README for the published index URL.
+Add this index source under **Plugins → Discover → Add index source**:
+
+```
+https://raw.githubusercontent.com/324641aliyun/dsh-full-permission-real/main/market/index.json
+```
+
+Then install **Full permission (real)**. The index pins a public Git commit, so
+installation needs no npm account:
+
+```
+git+https://github.com/324641aliyun/dsh-full-permission-real.git#<commit>
+```
+
+See `PUBLISHING.md` for the publishing and version-bump workflow.
 
 ### From a local checkout
 
