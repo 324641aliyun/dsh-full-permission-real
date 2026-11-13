@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "title": {
+    "en": "Full permission (real) plugin index",
+    "zh": "完全权限（真实）插件索引"
+  },
+  "description": {
+    "en": "Index source for dsh-full-permission-real: a Windows-only DSH bundle that adds a real elevated-administrator permission mode.",
+    "zh": "dsh-full-permission-real 的索引源：仅限 Windows 的 DSH 组合包，新增真实管理员提权的权限模式。"
+  },
+  "metadata": {
+    "categories": {
+      "permission-mode": {
+        "title": {
+          "en": "Permission modes",
+          "zh": "权限模式"
+        }
+      }
+    },
+    "labels": {
+      "windows-only": {
+        "title": {
+          "en": "Windows only",
+          "zh": "仅 Windows"
+        }
+      },
+      "administrator": {
+        "title": {
+          "en": "Administrator",
+          "zh": "管理员权限"
+        }
+      },
+      "experimental": {
+        "title": {
+          "en": "Experimental",
+          "zh": "实验性"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-full-permission-real",
+      "title": {
+        "en": "Full permission (real)",
+        "zh": "完全权限（真实）"
+      },
+      "description": {
+        "en": "Adds the 完全权限（真实） permission mode: no file sandbox, no approval requests, and a real elevated Windows administrator PowerShell behind every shell command, with no per-command UAC.",
+        "zh": "新增「完全权限（真实）」权限模式：无文件沙箱、无审批请求，每条 shell 命令都由真实的本机管理员 PowerShell 执行，且不会逐次弹出 UAC。"
+      },
+      "icon": "icons/dsh-full-permission-real.svg",
+      "author": "324641aliyun",
+      "homepage": "https://github.com/324641aliyun/dsh-full-permission-real#readme",
+      "repository": {
+        "url": "https://github.com/324641aliyun/dsh-full-permission-real"
+      },
+      "metadata": {
+        "category": "permission-mode",
+        "labels": [
+          "windows-only",
+          "administrator",
+          "experimental"
+        ],
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "permission",
+          "permission-mode",
+          "powershell",
+          "administrator",
+          "elevation",
+          "uac",
+          "windows"
+        ],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1794572523,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": "0.2.2-rc.1"
+          }
+        }
+      ]
+    }
+  ]
+}

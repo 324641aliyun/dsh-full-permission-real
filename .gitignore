@@ -1,0 +1,11 @@
+# node artifacts
+node_modules/
+pnpm-lock.yaml
+*.tgz
+
+# local-only research / recon artifacts (the shipped package excludes them too)
+research/
+recon/
+
+# local verification leftovers
+*.log

@@ -1,0 +1,33 @@
+# dsh-full-permission-real — bundle patch
+#
+# One Host row. Every capability is effect-owned by that row: disabling the
+# bundle or removing the package restores the previous composition, including
+# the shipped sandbox executor untouched (the plugin patches the mounted shell
+# provider at runtime instead of replacing its row).
+- insert:
+    - id: full-permission-real
+      name: dsh-full-permission-real
+      config:
+        # Master switch. false = the bundle stays installed but registers nothing.
+        enabled: true
+        # Register the selectable "完全权限（真实）" / full-access-real permission mode.
+        presetEnabled: true
+        presetName: 完全权限（真实）
+        presetDescription: 真实管理员权限：无文件沙箱、无审批请求；pwsh 命令以本机管理员令牌真实执行，不再逐次弹出 UAC。
+        # auto  = use the inherited administrator token when DSH itself is elevated,
+        #         otherwise ask ONE UAC consent for a persistent elevated broker
+        # never = never ask; the mode requires DSH to be started as administrator
+        elevation: auto
+        # auto | powershell | pwsh (auto prefers Windows PowerShell 5.1)
+        shell: auto
+        # Serve the dsh-powershell tools (psh/psh_elevated/psh_job/psh_status)
+        # through the same elevated channel while the mode is active.
+        pshBridge: true
+        # Contribute the model-facing runtime-context line for the mode.
+        contextEnabled: true
+        broker:
+          # Includes the time a human needs to answer the UAC dialog.
+          startTimeoutMs: 180000
+          # The elevated broker exits after this much inactivity.
+          idleTimeoutMs: 1800000
+          maxConcurrentRuns: 16

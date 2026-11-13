@@ -1,0 +1,77 @@
+{
+  "name": "dsh-full-permission-real",
+  "version": "1.0.0",
+  "description": "DSH plugin: adds the 完全权限（真实） permission mode — no sandbox, no approval requests, and a real elevated Windows administrator PowerShell behind every command, with no per-command UAC.",
+  "type": "module",
+  "main": "lib/host.js",
+  "exports": {
+    ".": "./lib/host.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./icon.svg": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/**/*.js",
+    "lib/launcher.ps1",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "market/index.json",
+    "market/icons/*.svg",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml",
+      "platforms": [
+        "win32"
+      ]
+    }
+  },
+  "icon": "./icon.svg",
+  "engines": {
+    "dsh": "0.2.2-rc.1",
+    "node": ">=20"
+  },
+  "os": [
+    "win32"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh-bundle",
+    "permission",
+    "permission-mode",
+    "powershell",
+    "administrator",
+    "elevation",
+    "uac",
+    "windows"
+  ],
+  "scripts": {
+    "test": "node test/elevation-smoke.mjs && node test/host-logic.mjs && node market/validate.mjs",
+    "test:elevation": "node test/elevation-smoke.mjs",
+    "test:host": "node test/host-logic.mjs",
+    "test:medium": "node test/run-broker-medium.mjs",
+    "test:market": "node market/validate.mjs"
+  },
+  "license": "MIT",
+  "author": "dsh-full-permission-real contributors",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/324641aliyun/dsh-full-permission-real.git"
+  },
+  "homepage": "https://github.com/324641aliyun/dsh-full-permission-real#readme",
+  "bugs": {
+    "url": "https://github.com/324641aliyun/dsh-full-permission-real/issues"
+  }
+}
