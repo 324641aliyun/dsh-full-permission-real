@@ -152,8 +152,14 @@ two things "published to the plugin market" means for DSH:
 
 `market/validate.mjs` (15 checks including the Discover simulation) passes for
 the live index and for the npm variant kept in `market/index.npm-sample.json`.
-The commit pin is verified by installing that exact spec into the Web profile
-(see the final install/reinstall step in the delivery report).
+The commit pin is verified by installing that exact spec into the Web profile:
+the profile dependency is now
+`github:324641aliyun/dsh-full-permission-real#84d608865edc61de860cc4c540abb620776c983d`
+(the same `git+https://…#<commit>` target `marketInstallTarget` produces), the
+bundle is selected, and `full_real_status` plus an elevated `pwsh` command were
+re-verified after the switch. The temporary local link install and the local
+`127.0.0.1:8791` index server were removed; Discover now points at the public
+index URL.
 
 npm publishing is prepared but blocked by account-side 2FA: the npm account is
 `auth-and-writes` with a passkey, and npm CLI requires an OTP or a granular
