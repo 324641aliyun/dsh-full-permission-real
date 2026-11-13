@@ -74,7 +74,7 @@
           "source": {
             "type": "git",
             "url": "https://github.com/324641aliyun/dsh-full-permission-real.git",
-            "commit": "0123456789abcdef0123456789abcdef01234567"
+            "commit": "de68352b4353075b52de1db8f49cdc6669542223"
           },
           "engines": {
             "dsh": "0.2.2-rc.1"
