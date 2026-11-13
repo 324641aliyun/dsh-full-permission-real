@@ -9,3 +9,4 @@ recon/
 
 # local verification leftovers
 *.log
+release-commit.txt
