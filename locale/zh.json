@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "完全权限（真实）",
-    "description": "新增「完全权限（真实）」权限模式：无文件沙箱、无审批请求，真实以本机管理员令牌执行 PowerShell，不再逐次弹出 UAC。"
+    "title": "TrustedInstaller 完全权限",
+    "description": "宿主令牌验证与逐次自动审批，拒绝结果直接返回模型。"
   }
 }

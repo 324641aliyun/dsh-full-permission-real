@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Full permission (real)",
-    "description": "Adds the 完全权限（真实） permission mode: no file sandbox, no approval requests, and real elevated Windows administrator PowerShell with no per-command UAC."
+    "title": "TrustedInstaller full permissions",
+    "description": "Verifies the inherited token and reviews each call before dispatch."
   }
 }

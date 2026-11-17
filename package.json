@@ -1,7 +1,7 @@
 {
   "name": "dsh-full-permission-real",
-  "version": "1.0.0",
-  "description": "DSH plugin: adds the 完全权限（真实） permission mode — no sandbox, no approval requests, and a real elevated Windows administrator PowerShell behind every command, with no per-command UAC.",
+  "version": "2.0.0",
+  "description": "Verified inherited TrustedInstaller token with independent per-call DSH Auto review.",
   "type": "module",
   "main": "lib/host.js",
   "exports": {
@@ -14,7 +14,6 @@
   },
   "files": [
     "lib/**/*.js",
-    "lib/launcher.ps1",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
@@ -35,7 +34,7 @@
   },
   "icon": "./icon.svg",
   "engines": {
-    "dsh": "0.2.2-rc.1",
+    "dsh": "0.2.2-rc.4",
     "node": ">=20"
   },
   "os": [
@@ -43,23 +42,15 @@
   ],
   "keywords": [
     "dsh",
-    "deepseek-harness",
     "dsh-plugin",
     "dsh-bundle",
-    "permission",
+    "windows",
     "permission-mode",
-    "powershell",
-    "administrator",
-    "elevation",
-    "uac",
-    "windows"
+    "trustedinstaller",
+    "auto-review"
   ],
   "scripts": {
-    "test": "node test/elevation-smoke.mjs && node test/host-logic.mjs && node market/validate.mjs",
-    "test:elevation": "node test/elevation-smoke.mjs",
-    "test:host": "node test/host-logic.mjs",
-    "test:medium": "node test/run-broker-medium.mjs",
-    "test:market": "node market/validate.mjs"
+    "test": "node --test test/review.mjs"
   },
   "license": "MIT",
   "author": "dsh-full-permission-real contributors",
