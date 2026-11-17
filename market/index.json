@@ -1,12 +1,12 @@
 {
   "format": 1,
   "title": {
-    "en": "Full permission (real) plugin index",
-    "zh": "完全权限（真实）插件索引"
+    "en": "DSH presets",
+    "zh": "DSH 权限与对话预设"
   },
   "description": {
-    "en": "Index source for dsh-full-permission-real: a Windows-only DSH bundle that adds a real elevated-administrator permission mode. Installs from a commit-pinned public Git repository.",
-    "zh": "dsh-full-permission-real 的索引源：仅限 Windows 的 DSH 组合包，新增真实管理员提权的权限模式。从固定 commit 的公网 Git 仓库安装。"
+    "en": "Reviewed TrustedInstaller mode and restricted chat with web and video reading.",
+    "zh": "包含 TrustedInstaller 逐次审批权限与网页、视频阅读基础对话预设。"
   },
   "metadata": {
     "categories": {
@@ -14,6 +14,12 @@
         "title": {
           "en": "Permission modes",
           "zh": "权限模式"
+        }
+      },
+      "chat": {
+        "title": {
+          "en": "Chat presets",
+          "zh": "对话预设"
         }
       }
     },
@@ -42,12 +48,12 @@
     {
       "name": "dsh-full-permission-real",
       "title": {
-        "en": "Full permission (real)",
-        "zh": "完全权限（真实）"
+        "en": "TrustedInstaller full permissions",
+        "zh": "TrustedInstaller 完全权限"
       },
       "description": {
-        "en": "Adds the 完全权限（真实） permission mode: no file sandbox, no approval requests, and a real elevated Windows administrator PowerShell behind every shell command, with no per-command UAC.",
-        "zh": "新增「完全权限（真实）」权限模式：无文件沙箱、无审批请求，每条 shell 命令都由真实的本机管理员 PowerShell 执行，且不会逐次弹出 UAC。"
+        "en": "Checks the host token and independently reviews each call. Denials return to the model.",
+        "zh": "验证宿主已有的 TrustedInstaller 令牌，逐次自动审批，拒绝原因返回模型。"
       },
       "icon": "icons/dsh-full-permission-real.svg",
       "author": "324641aliyun",
@@ -78,15 +84,54 @@
       },
       "versions": [
         {
-          "version": "1.0.0",
-          "publishTimestamp": 1794572523,
+          "version": "2.0.0",
+          "publishTimestamp": 1794955281,
           "source": {
             "type": "git",
             "url": "https://github.com/324641aliyun/dsh-full-permission-real.git",
-            "commit": "84d608865edc61de860cc4c540abb620776c983d"
+            "commit": "244099c124d568df0353481cf402379350b0b2f7"
           },
           "engines": {
-            "dsh": "0.2.2-rc.1"
+            "dsh": "0.2.2-rc.4"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-chat-only",
+      "title": {
+        "en": "Basic chat",
+        "zh": "基础对话"
+      },
+      "description": {
+        "en": "Read public pages and consecutive Bilibili frames, calculate and read current uploads.",
+        "zh": "读取公开网页正文与 B 站视频连续画面，支持简单计算和当前会话附件。"
+      },
+      "author": "324641aliyun",
+      "metadata": {
+        "category": "chat",
+        "keywords": [
+          "bilibili",
+          "web",
+          "chat",
+          "video"
+        ]
+      },
+      "homepage": "https://github.com/324641aliyun/dsh-chat-only#readme",
+      "repository": {
+        "url": "https://github.com/324641aliyun/dsh-chat-only"
+      },
+      "versions": [
+        {
+          "version": "1.1.0",
+          "publishTimestamp": 1794955281,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/324641aliyun/dsh-chat-only.git",
+            "commit": "c087437c36d3dc4f654d03079df52300fa831595"
+          },
+          "engines": {
+            "dsh": "0.2.2-rc.4"
           }
         }
       ]
